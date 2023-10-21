@@ -8,38 +8,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Document {
-    private int id;
-    private String title;
-    private String author;
-    private String content;
-
-    public Document(int id, String title, String author, String content) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.content = content;
-    }
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getText() {
-        return content;
-    }
-    @Override
-    public String toString() {
-        return "Document ID: " + id + "\nTitle: " + title + "\nAuthor: " + author + "\nText:\n" + content;
-    }
-}
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.TextField;
 
 public class CranFileParser {
     public static List<Document> parseFile(String filePath) {
@@ -57,7 +27,12 @@ public class CranFileParser {
                 if (isAttributeLine(line)) {
                     // if all attributes set, then a full document has been parsed
                     if (id != -1 && !title.equals("") && !author.equals("") && !text.equals("")) {
-                            documents.add(new Document(id, title, author, text));
+                            Document doc = new Document();
+                            doc.add(new TextField("id", String.valueOf(id), TextField.Store.YES));
+                            doc.add(new TextField("title", title, TextField.Store.YES));
+                            doc.add(new TextField("author", author, TextField.Store.YES));
+                            doc.add(new TextField("text", text, TextField.Store.YES));
+                            documents.add(doc);
                             id = -1;
                             title = "";
                             author = "";
@@ -91,11 +66,12 @@ public class CranFileParser {
             }
             // if all attributes set, add last document
             if (id != -1 && !title.equals("") && !author.equals("") && !text.equals("")) {
-                    documents.add(new Document(id, title, author, text));
-                    id = -1;
-                    title = "";
-                    author = "";
-                    text = "";
+                    Document doc = new Document();
+                    doc.add(new TextField("id", String.valueOf(id), TextField.Store.YES));
+                    doc.add(new TextField("title", title, TextField.Store.YES));
+                    doc.add(new TextField("author", author, TextField.Store.YES));
+                    doc.add(new TextField("text", text, TextField.Store.YES));
+                    documents.add(doc);
             }
         } catch (IOException e) {
             e.printStackTrace();
