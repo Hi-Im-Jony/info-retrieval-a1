@@ -1,3 +1,4 @@
-/target
 .vscode
-resources/index
+/target
+/resources/results
+/resources/index
